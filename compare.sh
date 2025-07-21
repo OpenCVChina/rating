@@ -5,5 +5,5 @@ modules=("calib3d" "core" "dnn" "features2d" "imgcodecs" "imgproc" "objdetect" "
 #modules=("3d" "calib" "core" "dnn" "features" "imgcodecs" "imgproc" "objdetect" "photo" "stereo" "stitching" "video" "videoio")
 
 for module in "${modules[@]}"; do
-    ./build/bin/opencv_perf_${module} --gtest_output=xml:perf/${module}.xml --perf_force_samples=50 --perf_min_samples=50
+    python opencv/modules/ts/misc/summary.py perf/i7-12700k/${module}.xml perf/${module}.xml -o html > perf/${module}.html
 done
