@@ -4,7 +4,11 @@ Scripts to rate SBCs (Single Board Computer) with OpenCV Performance Testings.
 
 ## Get scores with Rating
 
-TBD
+```bash
+bash build.sh
+bash run.sh
+bash compare.sh
+```
 
 ## License
 
