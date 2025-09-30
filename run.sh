@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -lt 2 ]; then
-  echo "Usage: $0 <arch> <cpu name> . Example: run.sh arm rk3568 or run.sh arm rk3568 imgproc"
+  echo "Usage: $0 <arch> <cpu model> . Example: run.sh arm RK3568 or run.sh arm RKk3568 imgproc"
   exit 1
 fi
 
@@ -12,9 +12,9 @@ if [ ! -d "opencv_extra" ]; then
 fi
 
 # 4.x
-modules=("calib3d" "core" "features2d" "imgproc" "objdetect" "photo" "stitching" "video")
+modules=("calib3d" "core" "features2d" "imgproc" "objdetect")
 # 5.x
-#modules=("3d" "calib" "core" "features" "imgproc" "objdetect" "photo" "stereo" "stitching" "video")
+#modules=("3d" "calib" "core" "features" "imgproc" "objdetect" "stereo")
 if [ $# -ge 3 ]; then
     modules=("${@:3}")
 fi
@@ -25,20 +25,11 @@ if [ ! -d ${RESULT_DIR} ]; then
 fi
 
 export OPENCV_TEST_DATA_PATH=$(pwd)/opencv_extra/testdata
-if [ $1 = "risc-v" ] && [ $2 = "k1" ]; then
-    export LD_LIBRARY_PATH=cross-build-gcc/lib
-    for module in "${modules[@]}"; do
-        echo "PERFORMANCE TEST MODULE: $module"
-        ./cross-build-gcc/bin/opencv_perf_${module} --gtest_output=xml:${RESULT_DIR}/${module}-$2\(gcc\).xml --perf_force_samples=50 --perf_min_samples=50
-    done
-    export LD_LIBRARY_PATH=cross-build-clang/lib
-    for module in "${modules[@]}"; do
-        echo "PERFORMANCE TEST MODULE: $module"
-        ./cross-build-clang/bin/opencv_perf_${module} --gtest_output=xml:${RESULT_DIR}/${module}-$2\(clang\).xml --perf_force_samples=50 --perf_min_samples=50
-    done
-else
-    for module in "${modules[@]}"; do
-        echo "PERFORMANCE TEST MODULE: $module"
-        ./build/bin/opencv_perf_${module} --gtest_output=xml:${RESULT_DIR}/${module}-$2.xml --perf_force_samples=50 --perf_min_samples=50
-    done
+if [ $1 = "risc-v" ] && [ $2 = "K1" ]; then
+    export LD_LIBRARY_PATH=build/lib
 fi
+
+for module in "${modules[@]}"; do
+    echo "PERFORMANCE TEST MODULE: $module"
+    ./build/bin/opencv_perf_${module} --gtest_output=xml:${RESULT_DIR}/${module}-$2.xml --perf_force_samples=50 --perf_min_samples=50
+done

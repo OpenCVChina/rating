@@ -32,29 +32,17 @@ fi
 if [ ${iarch} = "risc-v" ]; then
     echo "Building OpenCV for risc-v"
     TOOLCHAIN_FILE_GCC=$(pwd)/opencv/platforms/linux/riscv64-gcc.toolchain.cmake
-    TOOLCHAIN_FILE_CLANG=$(pwd)/opencv/platforms/linux/riscv64-clang.toolchain.cmake
     # GCC
-    cmake -G Ninja -B cross-build-gcc \
+    cmake -G Ninja -B build \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-        -DCMAKE_INSTALL_PREFIX=cross-build-gcc/install \
+        -DCMAKE_INSTALL_PREFIX=build/install \
         -DCMAKE_C_COMPILER=${TOOLCHAIN_DIR}/bin/riscv64-unknown-linux-gnu-gcc \
         -DCMAKE_CXX_COMPILER=${TOOLCHAIN_DIR}/bin/riscv64-unknown-linux-gnu-g++ \
         -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE_GCC} \
         -DWITH_OPENCL=OFF -DWITH_LAPACK=OFF -DWITH_EIGEN=OFF -DBUILD_TESTS=OFF \
         -DCPU_BASELINE=RVV -DCPU_BASELINE_REQUIRE=RVV -DRISCV_RVV_SCALABLE=ON opencv
-    # Clang
-    cmake -G Ninja -B cross-build-clang \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-        -DCMAKE_INSTALL_PREFIX=cross-build-clang/install \
-        -DRISCV_CLANG_BUILD_ROOT=${TOOLCHAIN_DIR} \
-        -DRISCV_GCC_INSTALL_ROOT=${TOOLCHAIN_DIR} \
-        -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE_CLANG} \
-        -DWITH_OPENCL=OFF -DWITH_LAPACK=OFF -DWITH_EIGEN=OFF -DBUILD_TESTS=OFF \
-        -DCPU_BASELINE=RVV -DCPU_BASELINE_REQUIRE=RVV -DRISCV_RVV_SCALABLE=ON opencv
-    cmake --build cross-build-gcc --target install -j10
-    cmake --build cross-build-clang --target install -j10
+    cmake --build build --target install -j10
 else
     echo "Building OpenCV for ${iarch}"
     cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/install \

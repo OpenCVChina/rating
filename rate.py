@@ -15,9 +15,9 @@ args = parser.parse_args()
 output_file = args.output
 
 # 4.x
-modules=["calib3d" "core" "features2d" "imgproc" "objdetect" "photo" "stitching" "video"]
+modules=["calib3d", "core", "features2d", "imgproc", "objdetect"]
 # 5.x
-#modules=["3d" "calib" "core" "features" "imgproc" "objdetect" "photo" "stereo" "stitching" "video"]
+#modules=["3d", "calib", "core", "features", "imgproc", "objdetect", "stereo"]
 if args.modules:
     modules = args.modules
 
@@ -38,7 +38,6 @@ for module in modules:
     score = score.values.tolist()
     for (i, dev_type) in enumerate(dev_types):
         if dev_type not in result:
-
             result[dev_type] = []
         result[dev_type].append(score[i])
 
