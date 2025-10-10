@@ -1,4 +1,5 @@
 import pandas as pd
+from scipy.stats import gmean
 import re
 import argparse
 
@@ -21,29 +22,36 @@ modules=["calib3d", "core", "features2d", "imgproc", "objdetect"]
 if args.modules:
     modules = args.modules
 
-result = dict()
-result["module"] = []
-
 df = pd.read_html(f"perf/{modules[0]}.html")[0]
 rows, cols = df.shape
-dev_types = [re.search(r'-(.*?)\s+vs', s).group(1) for s in df.columns.tolist()[cols//2+1:cols]]
+col_start = cols // 2 + 1
+cols_to_calculate = list(range(col_start, cols))
+dev_types = [re.search(r'-(.*?)\s+vs', s).group(1) for s in df.columns.tolist()[col_start:]]
+
+result = dict()
+result["module"] = []
+for dev_type in dev_types:
+    result[dev_type] = []
+
 
 for module in modules:
-    result["module"].append(module)
-
     df = pd.read_html(f"perf/{module}.html")[0]
-    df = df[df.iloc[:, cols//2+1:cols] != "-"]
-    df.iloc[:, cols//2+1:cols] = df.iloc[:, cols//2+1:cols].apply(pd.to_numeric)
-    score = df.iloc[:, cols//2+1:cols].mean() * 100
-    score = score.values.tolist()
-    for (i, dev_type) in enumerate(dev_types):
-        if dev_type not in result:
-            result[dev_type] = []
-        result[dev_type].append(score[i])
+    df['Group'] = df.iloc[:, 0].astype(str).str.split(':').str[0]
+
+    result["module"].append(module)
+    for col_idx in cols_to_calculate:
+        col_name = df.columns[col_idx]
+        print(f"col_name: {col_name}")
+        df[col_name] = pd.to_numeric(df[col_name], errors='coerce')
+        valid_df = df.dropna(subset=[col_name])
+
+        group_gmeans = valid_df.groupby('Group')[col_name].apply(lambda x: gmean(x[x > 0]) if any(x > 0) else float('nan'))
+        file_col_gmean = gmean(group_gmeans.dropna()) if not group_gmeans.dropna().empty else float('nan')
+        result[dev_types[col_idx - col_start]].append(file_col_gmean * 100)
 
 df = pd.DataFrame(result)
 
-mean_scores = df.drop(columns="module").mean()
+mean_scores = df.drop(columns="module").apply(lambda x: gmean(x[x > 0]) if any(x > 0) else float('nan'))
 df.loc['Mean'] = ['Mean'] + mean_scores.tolist()
 numeric_cols = df.select_dtypes(include="number").columns
 df[numeric_cols] = df[numeric_cols].round(2)
