@@ -47,7 +47,7 @@ python rate.py
 
 ## Benchmarks
 
-| module     |     K1 |     M1 |   RK3568 |   i7-12700K |
+| module     | M1(st) |     M1 |   RK3568 |   i7-12700K |
 |:-----------|-------:|-------:|---------:|------------:|
 | calib3d    |  86.56 | 789.3  |    89.21 |     1047.36 |
 | core       | 107.72 | 937.43 |    77.41 |     1129.9  |
@@ -58,10 +58,10 @@ python rate.py
 
 *Note: Baseline CPU score is 100. The higher the score is, better the performance of that CPU is.*
 
-The baseline CPU is **Broadcom BCM2711**, quad-core ARM Cortex-A72 (ARMv8-A, 1.5 GHz), 4 threads.
-- **K1**: SpacemiT Key Stone® K1, an octa-core 64-bit RISC-V AI CPU, 8 threads.
+The baseline CPU is **Broadcom BCM2711**, quad-core ARM Cortex-A72 (ARMv8-A, 1.5 GHz), 4 threads. Corresponding SBC used is Raspberry Pi 4 Model B.
+- **M1(st)**: SpacemiT M1, an octa-core 64-bit RISC-V AI CPU (up to 1.6 GHz), 8 threads. Corresponding SBC used is MUSE Pi V30.
 - **M1**: Apple M1, 4 performance cores (up to 3.2 GHz) and 4 efficiency cores, 8 threads.
-- **RK3568**: Rockchip RK3568B2, quad-core ARM Cortex-A55 (up to 2.0 GHz), 4 threads.
+- **RK3568**: Rockchip RK3568B2, quad-core ARM Cortex-A55 (up to 2.0 GHz), 4 threads. Corresponding SBC used is ATK-DLRK3568.
 - **i7-12700K**: Intel Core i7-12700K, 8 Performance cores (3.60 GHz, turbo up to 4.90 GHz), 4 Efficient cores (2.70 GHz, turbo up to 3.80 GHz), 20 threads.
 
 
