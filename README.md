@@ -1,12 +1,48 @@
 # Rating
 
-The repository is to rate various CPUs' performance with OpenCV's Performance Tests. The scores are calculated against a baseline CPU:
+The repository is to evaluate various CPUs' performance with OpenCV's Performance Tests. The scores are calibrated against a baseline score of 100 (which is the score of an **Broadcom BCM2711** by default). Higher scores indicate better CPU performance.
 
-$$ Score = \frac{\text{Baseline CPU Time}}{\text{CPU Time}} \times 100 $$
+![](perf/benchmark.png?raw=true)
 
-OpenCV's Performance Tests measure the speed of various OpenCV key functions across modules run under controlled conditions. The **CPU Time** represents the mean execution time in milliseconds of key OpenCV functions within the performance test suite. The final average scores are geometric means of the ratios. 
+## How to compute the score
 
-## How To Get Scores With Rating
+OpenCV's Performance Tests evaluate the speed of OpenCV functions run under controlled conditions. Each OpenCV module includes several test suites, and each test suite contains multiple test cases. For each test case, a performance score is computed as:
+
+$$ score = \frac{\text{Baseline CPU Time}}{\text{CPU Time}} \times 100 $$
+
+where:
+- Baseline CPU Time is the arithmetic mean runtime (in milliseconds) of the test case measured on the baseline CPU.
+- CPU Time is the corresponding runtime measured on the tested CPU. 
+
+The geometric mean of all test case scores within a test suite represents the score of that test suite. Similarly, the geometric mean of all test suite scores forms the score of the module.
+**The overall benchmark score** is obtained as the geometric mean of all module scores.
+
+After the benchmark completes, detailed scores are reported:
+
+| module     |  Amlogic A311D |  Amlogic A311D2 |  Apple M1 |Intel Core i7-12700K |  Rockchip RK3568 |  Rockchip RK3568B2 |  SpacemiT M1 |  StarFive JH7110 |  Horizon Sunrise 3 |
+|:-----------|---------------:|----------------:|----------:|-----------------:|-----------------:|-------------------:|-------------:|-----------------:|-------------------:|
+| calib3d    |         168.5  |          167.83 |    805.11 |          1047.36 |            92.17 |              89.21 |        86.56 |            35.38 |              57.12 |
+| core       |         157.2  |          157.9  |    964.48 |          1129.9  |            81.14 |              77.41 |       107.72 |            26.96 |              57.54 |
+| features2d |         148.54 |          187.02 |    823.6  |          1659.51 |            72.93 |              71.62 |       103.65 |            30.52 |              49.69 |
+| imgproc    |         151.89 |          160.65 |    865.98 |          1318.76 |            82.88 |              79.7  |       119.81 |            33.73 |              52.4  |
+| objdetect  |         140.49 |          143.46 |    646.15 |          1188.76 |            67.34 |              65.16 |        65.25 |            33.72 |              45.13 |
+| **Score**  |     **153.04** |      **162.76** |**814.22** |      **1252.2**  |        **78.83** |           **76.2** |    **94.55** |        **31.92** |           **52.16**|
+
+*The baseline CPU is Broadcom BCM2711.*
+
+CPU specs:
+- **Broadcom BCM2711**: quad-core ARM Cortex-A72 (ARMv8, 1.5 GHz). Corresponding SBC used is Raspberry Pi 4 Model B.
+- **Amlogic A311D**: quad-core ARM Cortex-A73 (2.2 GHz) and dual-core ARM Cortex-A53 (1.8 GHz). Corresponding SBC used is Khadas VIM3.
+- **Amlogic A311D2**: quad-core ARM Cortex-A73 (2.2 GHz) and quad-core ARM Cortex-A53 (2.0 GHz). Corresponding SBC used is Khadas VIM4.
+- **Apple M1**: 4 performance cores (up to 3.2 GHz) and 4 efficiency cores.
+- **Intel Core i7-12700K**: 8 Performance cores (3.60 GHz, turbo up to 4.90 GHz), 4 Efficient cores (2.70 GHz, turbo up to 3.80 GHz).
+- **Rockchip RK3568**: quad-core ARM Cortex-A55 (up to 2.0 GHz). Corresponding SBC used is Firefly ROC-RK3568-PC.
+- **Rockchip RK3568B2**: quad-core ARM Cortex-A55 (up to 2.0 GHz). Corresponding SBC used is ATK-DLRK3568.
+- **SpacemiT M1**: octa-core 64-bit RISC-V AI CPU (clocked at 1.6 GHz). Corresponding SBC used is MUSE Pi V30.
+- **StarFive JH7110**: quad-core 64-bit RISC-V CPU (1.5 GHz). Corresponding SBC used is StarFive VisionFive 2.
+- **Horizon Sunrise 3**: quad-core ARM Cortex-A53 (1.2 GHz). Corresponding SBC used is Horizon Robotics X3_PI_V1.2.
+
+## How to run the benchmark
 
 - On the hardware to be tested, clone the repository:
 ```shell
@@ -15,9 +51,9 @@ git clone https://github.com/OpenCVChina/rating.git && cd rating
 
 - Run the scripts to build OpenCV and run the performance tests across modules. Results will be saved in `modulename-cpumodel.xml` respectively.
 ```bash
-# for example RK3568 is used
+# for example if Rockchip RK3568 is used
 bash build.sh arm
-bash run.sh arm RK3568
+bash run.sh arm "Rockchip RK3568"
 ```
 
 > **Note:**
@@ -44,26 +80,6 @@ The default baseline CPU is the one used by Raspberry Pi 4 Model B, which is Bro
 bash compare.sh you-baseline-cpu-model
 python rate.py
 ```
-
-## Benchmarks
-
-| module     | M1(st) |     M1 |   RK3568 |   i7-12700K |
-|:-----------|-------:|-------:|---------:|------------:|
-| calib3d    |  86.56 | 789.3  |    89.21 |     1047.36 |
-| core       | 107.72 | 937.43 |    77.41 |     1129.9  |
-| features2d | 103.65 | 827.43 |    71.62 |     1659.51 |
-| imgproc    | 119.81 | 849.14 |    79.7  |     1318.76 |
-| objdetect  |  65.25 | 622.16 |    65.16 |     1188.76 |
-| Mean       |  94.55 | 797.92 |    76.2  |     1252.2  |
-
-*Note: Baseline CPU score is 100. The higher the score is, better the performance of that CPU is.*
-
-The baseline CPU is **Broadcom BCM2711**, quad-core ARM Cortex-A72 (ARMv8-A, 1.5 GHz), 4 threads. Corresponding SBC used is Raspberry Pi 4 Model B.
-- **M1(st)**: SpacemiT M1, an octa-core 64-bit RISC-V AI CPU (up to 1.6 GHz), 8 threads. Corresponding SBC used is MUSE Pi V30.
-- **M1**: Apple M1, 4 performance cores (up to 3.2 GHz) and 4 efficiency cores, 8 threads.
-- **RK3568**: Rockchip RK3568B2, quad-core ARM Cortex-A55 (up to 2.0 GHz), 4 threads. Corresponding SBC used is ATK-DLRK3568.
-- **i7-12700K**: Intel Core i7-12700K, 8 Performance cores (3.60 GHz, turbo up to 4.90 GHz), 4 Efficient cores (2.70 GHz, turbo up to 3.80 GHz), 20 threads.
-
 
 ## License
 
