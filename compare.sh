@@ -12,5 +12,5 @@ fi
 
 for module in "${modules[@]}"; do
     echo "Comparing results of $module ..."
-    python3 opencv/modules/ts/misc/summary.py perf/${module}-${BASELINE}.xml perf/${module}*.xml -o html > perf/${module}.html
+    python3 opencv/modules/ts/misc/summary.py "perf/${module}-${BASELINE}.xml" "perf/${module}*.xml" -o html > perf/${module}.html
 done
