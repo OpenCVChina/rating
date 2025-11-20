@@ -1,6 +1,6 @@
 # Rating
 
-The repository is to evaluate various CPUs' performance with OpenCV's Performance Tests. The scores are calibrated against a baseline score of 100 (which is the score of an **Broadcom BCM2711** by default). Higher scores indicate better CPU performance.
+The repository is to evaluate various CPUs' performance with OpenCV's Performance Tests. The scores are calibrated against a baseline score of 100 (which is the score of a **Broadcom BCM2711** by default). Higher scores indicate better CPU performance.
 
 ![](perf/benchmark.png?raw=true)
 
@@ -14,10 +14,10 @@ where:
 - Baseline CPU Time is the arithmetic mean runtime (in milliseconds) of the test case measured on the baseline CPU.
 - CPU Time is the corresponding runtime measured on the tested CPU. 
 
-The geometric mean of all test case scores within a test suite represents the score of that test suite. Similarly, the geometric mean of all test suite scores forms the score of the module.
+The geometric mean of all test case scores within a test suite represents the score on that test suite. Similarly, the geometric mean of all test suite scores forms the score on the module.
 **The overall benchmark score** is obtained as the geometric mean of all module scores.
 
-After the benchmark completes, detailed scores are reported:
+After the benchmark completes, detailed scores are reported as:
 
 | module     |   Amlogic A311D |   Amlogic A311D2 |   Apple M1 |   Huawei Kunpeng |   Intel Core i7-12700K |   Rockchip RK3568 |   Rockchip RK3568B2 |   Rockchip RK3588S2 |   SpacemiT M1 |   StarFive JH7110 |   Sunrise 3 |
 |:-----------|----------------:|-----------------:|-----------:|-----------------:|-----------------------:|------------------:|--------------------:|--------------------:|--------------:|------------------:|------------:|
@@ -57,13 +57,13 @@ git clone https://github.com/OpenCVChina/rating.git && cd rating
 bash build.sh arm
 ```
 
-- Then run *run.sh* to run the performance tests across OpenCV modules. Results will be saved in *modulename-cpumodel.xml* respectively, e.g. *imgproc-Rockchip RK3568.xml*.
+- Then run *run.sh* to run the performance tests across OpenCV modules. Results will be saved as *modulename-cpumodel.xml* respectively, e.g. *imgproc-Rockchip RK3568.xml*.
 ```bash
 # for example if Rockchip RK3568 is used
 bash run.sh 'Rockchip RK3568'
 ```
 
-- Collect all the *modulename-cpumodel.xml* files from different hardware into the directory *your_path_to_rating_repo/perf* on a single hardware, then run the following scripts to obtain the CPU scores:
+- Collect all the *modulename-cpumodel.xml* files from different hardware into the *your_path_to_rating_repo/perf* directory on a single hardware, then run the following scripts to obtain the CPU scores:
 ```bash
 bash compare.sh
 python rate.py
@@ -71,7 +71,7 @@ python rate.py
 > **Note**
 > The default baseline CPU is the one on Raspberry Pi 4 Model B: Broadcom BCM2711. If a different CPU is used as the baseline CPU, run:
 > ```bash
-> # for example Intel Core i7-12700K is the baseline CPU
+> # for example Intel Core i7-12700K is taken the baseline CPU
 > bash compare.sh 'Intel Core i7-12700K'
 > python rate.py
 > ```

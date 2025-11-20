@@ -37,3 +37,4 @@ for module in "${modules[@]}"; do
     echo "PERFORMANCE TEST MODULE: $module"
     ./build/bin/opencv_perf_${module} --gtest_output=xml:"${RESULT_DIR}/${module}-${1}.xml" --perf_force_samples=50 --perf_min_samples=50
 done
+echo "Performance testing finished."
