@@ -1,6 +1,7 @@
 import pandas as pd
 from scipy.stats import gmean
 import re
+import os
 import argparse
 
 parser = argparse.ArgumentParser(description="Process OpenCV performance results.")
@@ -22,7 +23,22 @@ modules=["calib3d", "core", "features2d", "imgproc", "objdetect"]
 if args.modules:
     modules = args.modules
 
-df = pd.read_html(f"perf/{modules[0]}.html")[0]
+df = None
+for module in modules:
+    file_name = f"perf/{module}.html"
+    if not os.path.exists(file_name):
+        continue
+    try:
+        df = pd.read_html(file_name)[0]
+        break
+    except Exception as e:
+        print(f"Error reading {file_name}: {e}")
+        continue
+
+if df is None:
+    print("No valid performance HTML files found.")
+    exit(1)
+
 rows, cols = df.shape
 col_start = cols // 2 + 1
 cols_to_calculate = list(range(col_start, cols))
@@ -33,9 +49,16 @@ result["module"] = []
 for dev_type in dev_types:
     result[dev_type] = []
 
-
 for module in modules:
-    df = pd.read_html(f"perf/{module}.html")[0]
+    file_name = f"perf/{module}.html"
+    if not os.path.exists(file_name):
+        continue
+    try:
+        df = pd.read_html(file_name)[0]
+    except Exception as e:
+        print(f"Error reading {file_name}: {e}")
+        continue
+
     df['Group'] = df.iloc[:, 0].astype(str).str.split(':').str[0]
 
     result["module"].append(module)

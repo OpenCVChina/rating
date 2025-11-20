@@ -46,42 +46,35 @@ CPU specs:
 
 ## How to run the benchmark
 
-- On the hardware to be tested, clone the repository:
+- Clone the repository to the target hardware:
 ```shell
 git clone https://github.com/OpenCVChina/rating.git && cd rating
 ```
 
-- Run the scripts to build OpenCV and run the performance tests across modules. Results will be saved in `modulename-cpumodel.xml` respectively.
+- Run *build.sh* to build OpenCV.
 ```bash
 # for example if Rockchip RK3568 is used
 bash build.sh arm
-bash run.sh arm "Rockchip RK3568"
 ```
 
-> **Note:**
-> If you are running the repo with RISC-V (SpacemiT) CPU, clone the repo on both the build host and the target host. On the build host, download and extract the [toolchain](https://archive.spacemit.com/toolchain/spacemit-toolchain-linux-glibc-x86_64-v1.0.5.tar.xz) and set the environment variable.
-> ```shell
-> export TOOLCHAIN_DIR=/path/to/spacemit-toolchain-linux-glibc-x86_64-v1.0.5
-> ```
-> Run the scripts on the build host to cross build OpenCV.
-> ```bash
-> bash build.sh risc-v
-> ```
-> Then upload the directories *your_path_to_rating_repo/cross-build-gcc/bin* and *your_path_to_rating_repo/cross-build-gcc/lib* on the build host to the correspondent paths on the target host. Run the script to run the performance tests.
-> ```bash
-> bash run.sh risc-v K1
-> ```
+- Then run *run.sh* to run the performance tests across OpenCV modules. Results will be saved in *modulename-cpumodel.xml* respectively, e.g. *imgproc-Rockchip RK3568.xml*.
+```bash
+# for example if Rockchip RK3568 is used
+bash run.sh 'Rockchip RK3568'
+```
 
-- Collect all the `modulename-cpumodel.xml` files from different devices into the directory *your_path_to_rating_repo/perf* on a single device, and then run the scripts to obtain the scores:
+- Collect all the *modulename-cpumodel.xml* files from different hardware into the directory *your_path_to_rating_repo/perf* on a single hardware, then run the following scripts to obtain the CPU scores:
 ```bash
 bash compare.sh
 python rate.py
 ```
-The default baseline CPU is the one used by Raspberry Pi 4 Model B, which is Broadcom BCM2711. If a different CPU is used as the baseline CPU, run:
-```bash
-bash compare.sh you-baseline-cpu-model
-python rate.py
-```
+> **Note**
+> The default baseline CPU is the one on Raspberry Pi 4 Model B: Broadcom BCM2711. If a different CPU is used as the baseline CPU, run:
+> ```bash
+> # for example Intel Core i7-12700K is the baseline CPU
+> bash compare.sh 'Intel Core i7-12700K'
+> python rate.py
+> ```
 
 ## License
 

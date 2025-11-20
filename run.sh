@@ -1,8 +1,12 @@
 #!/bin/bash
 
-if [ $# -lt 2 ]; then
-  echo "Usage: $0 <arch> <cpu model> [module]" 
-  echo "Example: run.sh arm 'Rockchip RK3568' OR run.sh arm 'Rockchip RK3568' imgproc"
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <cpu model> [opencv module]"
+  printf "  %-16s %s\n" "-cpu model" "the model name of the target CPU"
+  printf "  %-16s %s\n" "-opencv module" "default modules will be tested if no module specified: calib3d, core, features2d, imgproc, objdetect"
+  echo "Example:"
+  printf "  %-7s %s\n" "$0" "'Rockchip RK3568'"
+  printf "  %-7s %s %s\n" "$0" "'Rockchip RK3568'" "imgproc"
   exit 1
 fi
 
@@ -19,8 +23,8 @@ fi
 modules=("calib3d" "core" "features2d" "imgproc" "objdetect")
 # 5.x
 #modules=("3d" "calib" "core" "features" "imgproc" "objdetect" "stereo")
-if [ $# -ge 3 ]; then
-    modules=("${@:3}")
+if [ $# -ge 2 ]; then
+    modules=("${@:2}")
 fi
 
 RESULT_DIR=perf/
@@ -29,11 +33,7 @@ if [ ! -d ${RESULT_DIR} ]; then
 fi
 
 export OPENCV_TEST_DATA_PATH=$(pwd)/opencv_extra/testdata
-if [ $1 = "risc-v" ] && [ $2 = "K1" ]; then
-    export LD_LIBRARY_PATH=build/lib
-fi
-
 for module in "${modules[@]}"; do
     echo "PERFORMANCE TEST MODULE: $module"
-    ./build/bin/opencv_perf_${module} --gtest_output=xml:"${RESULT_DIR}/${module}-${2}.xml" --perf_force_samples=50 --perf_min_samples=50
+    ./build/bin/opencv_perf_${module} --gtest_output=xml:"${RESULT_DIR}/${module}-${1}.xml" --perf_force_samples=50 --perf_min_samples=50
 done
