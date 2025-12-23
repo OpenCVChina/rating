@@ -53,4 +53,4 @@ else
     -DWITH_OPENCL=OFF -DWITH_LAPACK=OFF -DWITH_EIGEN=OFF -DBUILD_TESTS=OFF opencv
     cmake --build build --target install -j$(nproc)
 fi
-echo "OpenCV build finished."
+echo "OPENCV BUILD FINISHED."

@@ -3,23 +3,30 @@ from scipy.stats import gmean
 import re
 import os
 import argparse
+import matplotlib.pyplot as plt
+import numpy as np
+import json
 
 parser = argparse.ArgumentParser(description="Process OpenCV performance results.")
 parser.add_argument(
-    "--output", default="score.md",
-    help="Output Markdown filename"
+    "--output", default="scores.md",
+    help="Output scores filename"
 )
 parser.add_argument(
-    "--modules", nargs="+", 
+    "--modules", nargs="+",
     help="Module Name(s)"
+)
+parser.add_argument(
+    "--figure", default=False, action="store_true",
+    help="Create figure for each module"
 )
 args = parser.parse_args()
 output_file = args.output
 
 # 4.x
-modules=["calib3d", "core", "features2d", "imgproc", "objdetect"]
+modules=["calib3d", "core", "features2d", "imgproc", "objdetect", "dnn"]
 # 5.x
-#modules=["3d", "calib", "core", "features", "imgproc", "objdetect", "stereo"]
+#modules=["3d", "calib", "core", "features", "imgproc", "objdetect", "stereo", "dnn"]
 if args.modules:
     modules = args.modules
 
@@ -81,3 +88,66 @@ df[numeric_cols] = df[numeric_cols].round(2)
 with open(output_file, "w") as f:
     f.write(df.to_markdown(index=False))
 print(df.to_string(index=False))
+
+# Create figures:
+if args.figure:
+    with open("processor.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    Baseline = f"{data['baseline']['Processor']} | {data['baseline']['Cores']}"
+    Processor = [f"{p['Processor']} | {p['Cores']}" for p in data["processors"]]
+
+    devices = [c for c in df.columns if c != "module"]
+
+    # Loop over each row
+    for _, row in df.iterrows():
+
+        module_name = row["module"]
+
+        score_map = dict(zip(devices, row[devices].astype(float)))
+
+        labels = []
+        scores = []
+        labels.append(Baseline)
+        scores.append(100)
+        for p in Processor:
+            short_name = p.split("|")[0].strip()
+            if short_name in score_map:
+                labels.append(p)
+                scores.append(score_map[short_name])
+
+        plt.figure(figsize=(10, 0.5 * len(labels)))
+
+        y_pos = np.arange(len(labels))
+        bars = plt.barh(y_pos, scores)
+        bars[0].set_color("gray")   # Baseline bar in gray
+
+        plt.tick_params(axis='y', length=0)
+        ytick_labels = [label.replace(" | ", "\n") for label in labels]
+        plt.yticks(y_pos, ytick_labels, fontweight='bold')
+        plt.xticks([])
+
+        if module_name == "Score":
+            plt.title("Processor Benchmark", fontweight="bold")
+        else:
+            plt.title(module_name, fontweight="bold")
+
+        plt.gca().invert_yaxis()
+
+        for spine in plt.gca().spines.values():
+            spine.set_visible(False)
+
+        for bar, score in zip(bars, scores):
+            plt.text(
+                bar.get_width(),
+                bar.get_y() + bar.get_height() / 2,
+                f" {score:.2f}",
+                va="center",
+                ha="left",
+                fontsize=9
+            )
+
+        plt.tight_layout()
+        # plt.show()
+        print(f"Saving figure for {module_name}...")
+        plt.savefig(f"perf/{module_name}.png")

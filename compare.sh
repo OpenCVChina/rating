@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # 4.x
-modules=("calib3d" "core" "features2d" "imgproc" "objdetect")
+modules=("calib3d" "core" "features2d" "imgproc" "objdetect" "dnn")
 # 5.x
-#modules=("3d" "calib" "core" "features" "imgproc" "objdetect" "stereo")
+#modules=("3d" "calib" "core" "features" "imgproc" "objdetect" "stereo" "dnn")
 
-BASELINE="BCM2711"
+BASELINE="Broadcom BCM2711"
 if [ $# -eq 1 ]; then
     BASELINE="$1"
 fi
