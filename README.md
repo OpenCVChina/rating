@@ -32,10 +32,14 @@ After the benchmark completes, the overall score (labeled 'Score' in the table) 
 
 *The baseline CPU is Broadcom BCM2711.*
 
+Visualized score charts on each module are shown below, and the overall score of each device across all tested modules is shown in the figure above.
+
 |       |        |
 |-------|--------|
 | ![](perf/calib3d.png) | ![](perf/core.png) |
+|       |        |
 | ![](perf/features2d.png) | ![](perf/imgproc.png) |
+|       |        |
 | ![](perf/objdetect.png) | ![](perf/dnn.png) |
 
 CPU specs:
