@@ -62,7 +62,7 @@ CPU specs:
 
 - Clone the repository to the target hardware:
 ```shell
-git clone https://github.com/OpenCVChina/rating.git && cd rating
+git clone https://github.com/opencv/cvbenchmark.git && cd cvbenchmark
 ```
 
 - Run *build.sh* to build OpenCV.
@@ -77,7 +77,7 @@ bash build.sh arm
 bash run.sh 'Rockchip RK3568'
 ```
 
-- Collect all the *modulename-cpumodel.xml* files from different hardware into the *your_path_to_rating_repo/perf* directory on a single hardware, then run the following script to generate *modulename.html* files:
+- Collect all the *modulename-cpumodel.xml* files from different hardware into the *your_path_to_cvbenchmark_repo/perf* directory on a single hardware, then run the following script to generate *modulename.html* files:
 ```bash
 bash compare.sh
 ```
