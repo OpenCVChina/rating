@@ -1,4 +1,4 @@
-# Rating
+# CVBenchmark
 
 The repository is to evaluate various CPUs' performance with OpenCV's Performance Tests. The scores are calibrated against a baseline score of 100 (which is the score of a **Broadcom BCM2711** by default). Higher scores indicate better CPU performance.
 
