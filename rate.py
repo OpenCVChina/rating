@@ -4,6 +4,7 @@ import re
 import os
 import argparse
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 import json
 
@@ -94,10 +95,23 @@ if args.figure:
     with open("processor.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    Baseline = f"{data['baseline']['Processor']} | {data['baseline']['Cores']}"
-    Processor = [f"{p['Processor']} | {p['Cores']}" for p in data["processors"]]
+    Baseline = f"{data['baseline']['Processor']}\n{data['baseline']['Cores']}"
+    Processor = [f"{p['Processor']} | {p['Cores']} | {p['Arch']}" for p in data["processors"]]
 
     devices = [c for c in df.columns if c != "module"]
+
+    ARCH_COLORS = {
+        "ARM": "#7233F7",       # purple
+        "RISC-V": "#EDAC1A",    # yellow
+        "x86_64": "#00C7FD",    # cyan
+        "Unknown": "#A01A1E"    # red
+    }
+
+    legend_items = [mpatches.Patch(color="gray", label="Baseline (ARM)")]
+    for arch, color in ARCH_COLORS.items():
+        if arch != "Unknown":
+            legend_items.append(mpatches.Patch(color=color, label=arch))
+    # legend_items.append(mpatches.Patch(color=ARCH_COLORS["Unknown"], label="Unknown"))
 
     # Loop over each row
     for _, row in df.iterrows():
@@ -108,29 +122,35 @@ if args.figure:
 
         labels = []
         scores = []
+        colors = []
+
         labels.append(Baseline)
         scores.append(100)
+        colors.append("gray")   # Baseline color
+
         for p in Processor:
-            short_name = p.split("|")[0].strip()
-            if short_name in score_map:
-                labels.append(p)
-                scores.append(score_map[short_name])
+            soc, cores, arch = [x.strip() for x in p.split("|")]
+            if soc in score_map:
+                labels.append(f"{soc}\n{cores}")
+                scores.append(score_map[soc])
+
+                colors.append(ARCH_COLORS.get(arch, ARCH_COLORS["Unknown"]))
 
         plt.figure(figsize=(10, 0.5 * len(labels)))
 
         y_pos = np.arange(len(labels))
-        bars = plt.barh(y_pos, scores)
+        bars = plt.barh(y_pos, scores, color=colors)
         bars[0].set_color("gray")   # Baseline bar in gray
 
         plt.tick_params(axis='y', length=0)
-        ytick_labels = [label.replace(" | ", "\n") for label in labels]
-        plt.yticks(y_pos, ytick_labels, fontweight='bold')
+        plt.yticks(y_pos, labels, fontweight='bold')
         plt.xticks([])
 
         if module_name == "Score":
             plt.title("Processor Benchmark", fontweight="bold")
         else:
             plt.title(module_name, fontweight="bold")
+        plt.legend(handles=legend_items, loc="upper right", frameon=False)
 
         plt.gca().invert_yaxis()
 
