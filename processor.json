@@ -6,6 +6,16 @@
     },
     "processors": [
     {
+      "Processor": "SpacemiT M1",
+      "Cores": "1.6 GHz (8 cores)",
+      "Arch": "RISC-V"
+    },
+    {
+      "Processor": "StarFive JH7110",
+      "Cores": "1.5 GHz (4 cores)",
+      "Arch": "RISC-V"
+    },
+    {
       "Processor": "Amlogic A311D",
       "Cores": "2.2 GHz (6 cores)",
       "Arch": "ARM"
@@ -39,16 +49,6 @@
       "Processor": "Huawei Kunpeng",
       "Cores": "(4 cores)",
       "Arch": "ARM"
-    },
-    {
-      "Processor": "SpacemiT M1",
-      "Cores": "1.6 GHz (8 cores)",
-      "Arch": "RISC-V"
-    },
-    {
-      "Processor": "StarFive JH7110",
-      "Cores": "1.5 GHz (4 cores)",
-      "Arch": "RISC-V"
     },
     {
       "Processor": "Apple M1",
